@@ -89,7 +89,7 @@ parseMove [startChar,startNum,',',endChar,endNum] game
     | validPos (toUpper startChar, read [startNum]) && validPos (toUpper endChar, read [endNum]) =
         quickMove2 game (toUpper startChar, read[startNum]) (toUpper endChar, read[endNum])
     | otherwise = Nothing
-parseMove _ _ = Nothing --throw an error here?
+parseMove _ _ = Nothing
 
 parseSide :: String -> Maybe Side
 parseSide "White" = Just White
@@ -478,7 +478,6 @@ allPieceMoves game (pos, side, pieceType) =
                     , if enPassantRight then [((pos, side, Pawn False), rightDiag)] else []
                     ]
 
-            --in filter (\move -> not (causeCheck game move side)) singleMove ++ doubleMove ++ captureMoves ++ enPassantMoves
             in singleMove ++ doubleMove ++ captureMoves ++ enPassantMoves
 
         Rook hasMoved ->
@@ -507,7 +506,6 @@ allPieceMoves game (pos, side, pieceType) =
                 leftMoves = [ ((pos, side, Rook True), p) | p <- rookMovesInDirection positionsLeft ]
                 rightMoves = [ ((pos, side, Rook True), p) | p <- rookMovesInDirection positionsRight ]
 
-            --in filter (\move -> not (causeCheck game move side)) upMoves ++ downMoves ++ leftMoves ++ rightMoves
             in upMoves ++ downMoves ++ leftMoves ++ rightMoves
         
         Knight ->
@@ -534,7 +532,6 @@ allPieceMoves game (pos, side, pieceType) =
                             Nothing -> True  -- Empty square, valid move
                             Just (_, pieceSide, _) -> pieceSide /= side  -- Opponent's piece, valid move
                      ]
-            --in filter (\move -> not (causeCheck game move side)) validMoves
             in validMoves
 
         Bishop ->
@@ -563,7 +560,6 @@ allPieceMoves game (pos, side, pieceType) =
                 downRightMoves = [ ((pos, side, Bishop), p) | p <- bishopMovesInDirection positionsDownRight ]
                 downLeftMoves = [ ((pos, side, Bishop), p) | p <- bishopMovesInDirection positionsDownLeft ]
 
-            --in filter (\move -> not (causeCheck game move side)) upRightMoves ++ upLeftMoves ++ downRightMoves ++ downLeftMoves
             in upRightMoves ++ upLeftMoves ++ downRightMoves ++ downLeftMoves
 
         Queen ->
@@ -603,7 +599,6 @@ allPieceMoves game (pos, side, pieceType) =
                 downRightMoves = [ ((pos, side, Queen), p) | p <- queenMovesInDirection positionsDownRight ]
                 downLeftMoves = [ ((pos, side, Queen), p) | p <- queenMovesInDirection positionsDownLeft ]
 
-            --in filter (\move -> not (causeCheck game move side)) upMoves ++ downMoves ++ leftMoves ++ rightMoves ++ upRightMoves ++ upLeftMoves ++ downRightMoves ++ downLeftMoves
             in upMoves ++ downMoves ++ leftMoves ++ rightMoves ++ upRightMoves ++ upLeftMoves ++ downRightMoves ++ downLeftMoves
         
         King hasMoved ->
@@ -630,7 +625,6 @@ allPieceMoves game (pos, side, pieceType) =
                                     Nothing -> True  -- Empty square, valid move
                                     Just (_, pieceSide, _) -> pieceSide /= side  -- Opponent's piece, valid move
                             ]
-            --in filter (\move -> not (causeCheck game move side)) validMoves
             in validMoves
             
 
@@ -680,7 +674,6 @@ allLegalMoves game@(_ , side, pieces, _) =
                         else []
                 else []
     in filter (\move -> not (causeCheck game move side)) legalMoves ++ kingSideCastle ++ queenSideCastle
-    --in legalMoves ++ kingSideCastle ++ queenSideCastle
 
 outOfBounds :: Position -> Bool
 outOfBounds (x, y) = (ord(x) > 72 || ord(x) < 65 || y > 8 || y < 1)
@@ -695,8 +688,6 @@ makeMove (turnCounter, side, positions, boardHistory) (piece@(startPos, pieceSid
             isPawnMove = case pieceType of
                 Pawn _ -> True
                 _      -> False
-            
-            --newFiftyMoveCounter = if isCapture || isPawnMove then 0 else turnCounter + 1
 
             -- Determine if this move is a promotion move
             isPromotionMove = 
@@ -812,24 +803,24 @@ quickMove2 game@(_, currentTurn, _, _) startPos endPos =
                 move = if isTwoSquareMove
                        then ((pos, side, Pawn True), endPos)  -- Set Pawn True for two-square move
                        else ((pos, side, Pawn False), endPos) -- Keep Pawn False for one-square move
-            in if move `elem` allLegalMoves game then Just (makeMove game move) else Nothing --error ("Such move does not exist")
+            in if move `elem` allLegalMoves game then Just (makeMove game move) else Nothing 
         
         -- Handle the rook case
         Just (pos, side, Rook _) -> 
             let move = ((pos, side, Rook True), endPos)  -- Set Rook True after it moves
-            in if move `elem` allLegalMoves game then Just (makeMove game move) else Nothing --error ("Such move does not exist")
+            in if move `elem` allLegalMoves game then Just (makeMove game move) else Nothing 
 
         -- Handle the king case
         Just (pos, side, King _) -> 
             let move = ((pos, side, King True), endPos)  -- Set King True after it moves
-            in if move `elem` allLegalMoves game then Just (makeMove game move) else Nothing --error ("Such move does not exist")
+            in if move `elem` allLegalMoves game then Just (makeMove game move) else Nothing 
 
         -- Default case for other pieces
         Just piece -> 
             let move = (piece, endPos)
-            in if move `elem` allLegalMoves game then Just (makeMove game move) else Nothing --error ("Such move does not exist")
+            in if move `elem` allLegalMoves game then Just (makeMove game move) else Nothing 
 
-        Nothing -> Nothing --error "No piece at starting position"
+        Nothing -> Nothing 
 
 promotePiece :: Game -> Position -> Position -> PieceType -> Game
 promotePiece game@(_, currentTurn, _, _) startPos endPos promotionPiece =
