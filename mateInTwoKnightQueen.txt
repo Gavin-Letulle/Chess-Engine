@@ -1,0 +1,12 @@
+3
+White
+H 1 W KT
+E 5 W PF
+G 4 W N
+H 4 W Q
+F 7 B PF
+G 6 B PF
+H 7 B PF
+G 8 B KT
+F 5 B B
+F 8 B RT
